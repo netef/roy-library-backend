@@ -1,11 +1,17 @@
-from django.shortcuts import render
 from django.http import HttpResponse
+from django.views.generic import View
 # Create your views here.
 
 
-def get_books(request):
-    return HttpResponse("Books list.")
+class BooksView(View):
+    def post(self, request):
+        return HttpResponse("Book created.")
 
+    def get(self, request):
+        return HttpResponse("Books list.")
 
-def create_book(request):
-    return HttpResponse("Book created.")
+    def put(self, request):
+        return HttpResponse("Books changed.")
+
+    def delete(self, request):
+        return HttpResponse("Book deleted.")
