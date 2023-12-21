@@ -1,5 +1,5 @@
 from django.core import exceptions
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
 from django.views import View
 import json
 from .models import Book
@@ -7,28 +7,20 @@ from .models import Book
 
 class BooksView(View):
     def post(self, request):
-        data = json.loads(request.body)
-        book = Book(
-            title=data["title"], available_copies=data["available_copies"], img_url=data["img_url"])
-        print(book.available_copies)
-        book.save()
-        print(book.id)
-        return HttpResponse("Book created.")
+        try:
+            data = json.loads(request.body)
+            book = Book(**data)
+            book.save()
+        except:
+            return JsonResponse({"error": "cannot create a new book"}, status=404)
+        return JsonResponse({"data": f"{book.pk}"}, status=201)
 
     def get(self, request):
         try:
             books = Book.objects.all()
         except Book.DoesNotExist:
             return JsonResponse({'error': 'Books not found'}, status=404)
-        books = [
-            {
-                "id": book.pk,
-                'title': book.title,
-                'available_copies': book.available_copies,
-                'date_added': book.date_added,
-                'img_url': book.img_url,
-            } for book in books
-        ]
+        books = Book.serialize_lst(books)
         return JsonResponse(books, status=200, safe=False)
 
 
@@ -37,15 +29,9 @@ class BooksModifyView(View):
         try:
             book = Book.objects.get(pk=pk)
         except Book.DoesNotExist as e:
-            return JsonResponse({'error': 'Book not found'}, status=404)
-        data = {
-            "id": book.pk,
-            "title": book.title,
-            "available_copies": book.available_copies,
-            "date_added": book.date_added,
-            "img_url": book.img_url
-        }
-        return JsonResponse(data, status=200)
+            return JsonResponse({'error': f'{e}'}, status=404, safe=False)
+        book = Book.serialize(book)
+        return JsonResponse(book, status=200)
 
     def patch(self, request, pk):
         try:
@@ -65,5 +51,5 @@ class BooksModifyView(View):
             book = Book.objects.get(pk=pk)
             book.delete()
         except Book.DoesNotExist:
-            return JsonResponse({'error': 'Books not found'}, status=404)
+            return JsonResponse({'error': 'Book not found'}, status=404)
         return JsonResponse({"data": f"Book {pk} deleted."})
