@@ -8,6 +8,7 @@ class Book(models.Model):
     available_copies = models.IntegerField()
     date_added = models.DateTimeField(default=datetime.now(), blank=True)
     img_url = models.CharField(max_length=255)
+    borrowers = models.ManyToManyField(User, through='Borrow')
 
     def serialize(book):
         return {

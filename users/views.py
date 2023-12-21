@@ -3,6 +3,7 @@ from django.core import exceptions
 from django.http import JsonResponse
 from django.views import View
 from .models import User
+from books.models import Book
 
 
 class UsersView(View):
