@@ -90,7 +90,6 @@ class BorrowBooks(View):
             user = User.objects.get(pk=request.GET.get('user'))
             book = Book.objects.get(pk=request.GET.get('book'))
             borrowed_record = Borrow.objects.filter(user=user, book=book)
-            print(borrowed_record)
             if not borrowed_record:
                 raise Exception("You did not borrow this book")
             borrowed_record.delete()
