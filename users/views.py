@@ -37,7 +37,7 @@ class UsersModifyView(View):
     def patch(self, request, pk):
         try:
             user = User.objects.filter(pk=pk)
-            if user.count() == 0:
+            if not user:
                 raise exceptions.EmptyResultSet(f"Unable to find user {pk}")
             data = json.loads(request.body)
             user.update(**data)
