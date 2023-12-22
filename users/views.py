@@ -20,7 +20,6 @@ class UsersView(APIView):
         except Exception as e:
             return JsonResponse({'error': f"{e}"}, status=404)
         users = serialize_users(users)
-        # users = User.serialize_lst(users)
         return JsonResponse(users, status=200, safe=False)
 
 
@@ -32,7 +31,7 @@ class UsersModifyView(APIView):
             user = User.objects.get(pk=pk)
         except User.DoesNotExist as e:
             return JsonResponse({'error': f'{e}'}, status=404, safe=False)
-        user = User.serialize(user)
+        user = serialize_user(user)
         return JsonResponse(user, status=200)
 
     def patch(self, request, pk):

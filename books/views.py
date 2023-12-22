@@ -4,9 +4,13 @@ from django.views import View
 import json
 from .models import Book, Borrow
 from django.contrib.auth.models import User
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
 
 
-class BooksView(View):
+class BooksView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self, request):
         try:
             data = json.loads(request.body)
@@ -25,7 +29,9 @@ class BooksView(View):
         return JsonResponse(books, status=200, safe=False)
 
 
-class BooksModifyView(View):
+class BooksModifyView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request, pk):
         try:
             book = Book.objects.get(pk=pk)
@@ -56,7 +62,9 @@ class BooksModifyView(View):
         return JsonResponse({"data": f"Book {pk} deleted."})
 
 
-class BorrowBooks(View):
+class BorrowBooks(APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self, request):
         try:
             data = json.loads(request.body)
