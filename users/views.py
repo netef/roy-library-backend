@@ -2,30 +2,31 @@ import json
 from django.core import exceptions
 from django.http import JsonResponse
 from django.views import View
-from .models import User
+from django.contrib.auth.models import User
 from books.models import Book
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
+from royLibraryBackend.serializers import serialize_user, serialize_users
 
 
-class UsersView(View):
-    def post(self, request):
-        try:
-            data = json.loads(request.body)
-            user = User(**data)
-            user.save()
-        except:
-            return JsonResponse({"error": "cannot create a new user"}, status=404)
-        return JsonResponse({"data": f"{user.pk}"}, status=201)
+class UsersView(APIView):
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         try:
             users = User.objects.all()
-        except User.DoesNotExist:
-            return JsonResponse({'error': 'Users not found'}, status=404)
-        users = User.serialize_lst(users)
+            if not users:
+                raise Exception("No users in the database.")
+        except Exception as e:
+            return JsonResponse({'error': f"{e}"}, status=404)
+        users = serialize_users(users)
+        # users = User.serialize_lst(users)
         return JsonResponse(users, status=200, safe=False)
 
 
-class UsersModifyView(View):
+class UsersModifyView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request, pk):
         try:
             user = User.objects.get(pk=pk)

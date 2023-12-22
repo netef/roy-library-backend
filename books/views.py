@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.views import View
 import json
 from .models import Book, Borrow
-from users.models import User
+from django.contrib.auth.models import User
 
 
 class BooksView(View):
