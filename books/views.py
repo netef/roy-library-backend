@@ -76,7 +76,6 @@ class BorrowBooks(APIView):
             if borrowed_users.contains(user):
                 raise Exception("You cannot own the same book twice.")
             borrow = Borrow(user=user, book=book)
-
             borrow.save()
             book.available_copies -= 1
             book.save()

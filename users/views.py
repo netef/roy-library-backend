@@ -54,3 +54,14 @@ class UsersModifyView(APIView):
         except User.DoesNotExist:
             return JsonResponse({'error': 'User not found'}, status=404)
         return JsonResponse({"data": f"User {pk} deleted."})
+
+class UserAdminToggle(APIView):
+    permission_classes = [IsAuthenticated]
+    def patch(self, request, pk):
+        try:
+            user = User.objects.get(pk=pk)
+            user.is_superuser = not user.is_superuser
+            user.save()
+        except User.DoesNotExist as e:
+            return JsonResponse({'error': 'User not found'}, status=404)
+        return JsonResponse({"data": "user toggled."})
