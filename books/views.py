@@ -16,9 +16,10 @@ class BooksView(APIView):
             data = json.loads(request.body)
             book = Book(**data)
             book.save()
+            book = Book.serialize(book)
         except:
             return JsonResponse({"error": "cannot create a new book"}, status=404)
-        return JsonResponse({"data": f"{book.pk}"}, status=201)
+        return JsonResponse(book, status=201)
 
     def get(self, request):
         try:
