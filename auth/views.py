@@ -9,6 +9,9 @@ class RegisterView(View):
     def post(self, request):
         try:
             data = json.loads(request.body)
+            check_user = User.objects.filter(email=data["email"])
+            if check_user:
+                raise Exception("Email already in use.")
             user = User.objects.create_user(
                 username=data["username"],
                 password=data["password"],
